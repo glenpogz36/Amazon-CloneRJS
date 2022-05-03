@@ -60,8 +60,8 @@ function YourOrders() {
             <h1>Your Orders</h1>
 
             <div className='orders__order'>
-                {orders?.map(order => (
-                    <OrderTotal order={order} />
+                {orders?.map((order, i) => (
+                    <OrderTotal order={order} key={i} />
                 ))}
             </div>
         </div>

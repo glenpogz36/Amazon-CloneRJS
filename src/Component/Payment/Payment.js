@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Payment.css';
 import { useStateValue } from "../../StateProvider";
 import CheckoutProduct from "../Checkouts/CheckoutProduct";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import CurrencyFormat from "react-currency-format";
 import { getBasketTotal } from "../../reducer";
@@ -12,7 +12,7 @@ import { doc, setDoc } from "firebase/firestore";
 
 function Payment() {
     const [{ basket, user }, dispatch] = useStateValue();
-    const history = useHistory();
+    const history = useNavigate();
 
     const stripe = useStripe();
     const elements = useElements();
@@ -26,16 +26,22 @@ function Payment() {
     useEffect(() => {
         // generate the special stripe secret which allows us to charge a customer
         const getClientSecret = async () => {
-            const response = await axios({
-                method: 'post',
-                // Stripe expects the total in a currencies subunits
-                url: `/payments/create?total=${getBasketTotal(basket) * 100}`
-            });
-            setClientSecret(response.data.clientSecret)
-        }
 
+            try {
+                const response = await axios({
+                    method: 'post',
+                    // Stripe expects the total in a currencies subunits
+                    url: `/payments/create?total=${getBasketTotal(basket) * 100}`
+                })
+                setClientSecret(response.data.clientSecret)
+            } catch (error) {
+                console.log("Stripe API", error)
+            }
+
+        }
         getClientSecret();
-    }, [basket])
+
+    }, [])
 
     console.log('THE SECRET IS >>>', clientSecret)
     console.log('👱', user)
@@ -82,7 +88,7 @@ function Payment() {
                 dispatch({
                     type: 'EMPTY_BASKET'
                 })
-                history.replace('/orders')
+                history('/orders')
 
                 return;
             } catch (e) {
@@ -129,8 +135,10 @@ function Payment() {
                         <h3>Review items and delivery</h3>
                     </div>
                     <div className='payment__items'>
-                        {basket.map(item => (
+                        {basket.map((item, i) => (
+
                             <CheckoutProduct
+                                key={i}
                                 id={item.id}
                                 title={item.title}
                                 image={item.image}
@@ -138,6 +146,7 @@ function Payment() {
                                 rating={item.rating}
                             />
                         ))}
+
                     </div>
                 </div>
 

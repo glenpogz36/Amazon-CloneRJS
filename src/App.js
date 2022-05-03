@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import Header from "./Component/Header/Header";
 import Home from "./Component/Home/Home";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 import Checkout from "./Component/Checkouts/Checkout";
 import Login from "./Component/Auth/Login/Login";
 import Payment from "./Component/Payment/Payment";
@@ -43,33 +43,44 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <div className="app">
-        <Switch>
-          <Route path="/orders">
-            <Header />
-            <YourOrders />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/checkout">
-            <Header />
-            <Checkout />
-          </Route>
-          <Route path="/payment">
-            <Header />
-            <Elements stripe={promise}>
-              <Payment />
-            </Elements>
-          </Route>
-          <Route path="/">
-            <Header />
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+    // <Router>
+    //   <div className="app">
+    //     <Switch>
+    //       <Route path="/orders">
+    //         <Header />
+    //         <YourOrders />
+    //       </Route>
+    //       <Route path="/login">
+    //         <Login />
+    //       </Route>
+    //       <Route path="/checkout">
+    //         <Header />
+    //         <Checkout />
+    //       </Route>
+    //       <Route path="/payment">
+    //         <Header />
+    //         <Elements stripe={promise}>
+    //           <Payment />
+    //         </Elements>
+    //       </Route>
+    //       <Route path="/">
+    //         <Header />
+    //         <Home />
+    //       </Route>
+    //     </Switch>
+    //   </div>
+    // </Router>
+
+    <div className="app">
+      <Routes>
+        <Route exact path="/" element={[<Header />, <Home />]} />
+        <Route exact path="/payment" element={[<Header />, <Elements stripe={promise}><Payment /> </Elements>]} />
+        <Route exact path="/checkout" element={[<Header />, <Checkout />]} />
+        <Route exact path="/login" element={[<Login />]} />
+        <Route exact path="/orders" element={[<Header />, <YourOrders />]} />
+      </Routes>
+    </div>
+
   );
 }
 
